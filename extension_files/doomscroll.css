@@ -1,0 +1,147 @@
+:root {
+  --doom-font-size: 16px;
+  --doom-font-color: #e6e6e6;
+  --doom-color-background: #2b2a33;
+  --doom-color-clickable: #42424d;
+  --doom-color-clickable-disabled: #5e0000;
+  --doom-color-clickable-hover: #52525d;
+  --doom-color-warning-outline: #ffffff;
+  --doom-margin-vertical: 10px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --doom-color-hover-brightness: 75%;
+    --doom-font-color: #141414;
+    --doom-color-background: #f5f5f5;
+    --doom-color-clickable: #c2c2c2;
+    --doom-color-clickable-disabled: #bd2d2d;
+    --doom-color-clickable-hover: #a2a2a2;
+    --doom-color-warning-outline: #000;
+  }
+}
+
+/*general class, that identifies a element from this extension*/
+.doomscroll {
+  font-size: var(--doom-font-size);
+  font-family: Tahoma;
+  font-weight: normal;
+  color: var(--doom-font-color);
+}
+
+h1.doomscroll,
+h2.doomscroll,
+h3.doomscroll {
+  margin-top: var(--doom-margin-vertical);
+  margin-bottom: var(--doom-margin-vertical);
+  font-weight: bold;
+}
+
+h1.doomscroll {
+  font-size: calc(var(--doom-font-size)*2);
+  margin-bottom: calc(var(--doom-margin-vertical)*1.5);
+}
+
+h2.doomscroll {
+  font-size: calc(var(--doom-font-size)*1.75);
+  margin-bottom: calc(var(--doom-margin-vertical)*1.25);
+}
+
+h3.doomscroll {
+  font-size: calc(var(--doom-font-size)*1.5);
+}
+
+p.doomscroll {
+  margin-top: var(--doom-margin-vertical);
+  margin-bottom: var(--doom-margin-vertical);
+}
+
+button.doomscroll,
+input.doomscroll {
+  display: inline-block;
+  width: auto;
+  padding: 10px 15px;
+  margin: 0px 4px 0px 4px;
+  line-height: var(--doom-font-size);
+  border: none;
+  border-radius: 2px;
+  background-color: var(--doom-color-clickable);
+}
+button.doomscroll:hover{
+  background-color: var(--doom-color-clickable-hover);
+}
+button.doomscroll-iconButton{
+  background-size: contain;
+  background-repeat: space;
+  background-position: center;
+}
+button.doomscroll:first-child,
+input.doomscroll:first-child {
+  margin: 0px 4px 0px 0px;
+}
+button.doomscroll:last-child,
+input.doomscroll:last-child {
+  margin: 0px 0px 0px 4px;
+}
+button.doomscroll-transition{
+  background: linear-gradient(to right, var(--doom-color-clickable) 50%, var(--doom-color-clickable-disabled) 50%) left;
+  background-size: 200%;
+}
+button.doomscroll-transition:disabled{
+  animation-name: disabledAnimation;
+  animation-timing-function: linear;
+  animation-duration: 5s;
+}
+@keyframes disabledAnimation {
+  0%   { background-position: right; }
+  100% { background-position: left; }
+}
+
+.doomscroll-boxes {
+  border-radius: 4px;
+  border-style: none;
+  height: calc(var(--doom-font-size)*2.5);
+  box-sizing: border-box;
+  margin: 0px;
+}
+
+.doomscroll-screen-fullcover {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(2px) brightness(66%);
+}
+
+/*pagewarning and browser-tabbar-btn-popup*/
+.doomscroll-popup {
+  background-color: var(--doom-color-background);
+  display: block;
+  box-sizing: border-box;
+  max-width: 500px;
+  min-width: 400px;
+  height: auto;
+  max-height: 500px;
+  padding: 20px;
+}
+
+/*pagewarning popup*/
+#doomscrollPagewarning .doomscroll-popup {
+  outline-color: var(--doom-color-warning-outline);
+  outline-offset: 0px;
+  outline-style: solid;
+}
+
+/*buttons that are a child of li-elements (like in the list of registered urls)*/
+li.doomscroll button.doomscroll {
+  height: calc(var(--doom-font-size)*1.5);
+  padding: 0px;
+  width: calc(var(--doom-font-size)*1.5);
+  font-size: calc(var(--doom-font-size)*0.9);
+  margin-top: calc(var(--doom-font-size)*0.1);
+  margin-bottom: calc(var(--doom-font-size)*0.1);
+}

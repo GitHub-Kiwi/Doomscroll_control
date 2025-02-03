@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Doomscroll Prevention",
+  "version": "1.0",
+
+  "description": "On Doomscroll websites you will be asked to specify the amount of time you want to spend on that site. After that time you will be asked again. Click the toolbar-icon to it to add/remove Doomscroll websites.",
+  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/main/beastify",
+  "icons": {
+    "128": "icon.png"
+  },
+
+  "permissions": [
+    "alarms",
+    "scripting",
+    "storage",
+    "tabs"],
+  "web_accessible_resources": [
+    {
+      "resources": ["contentscript.html"],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "content_scripts": [
+   {
+     "matches": ["*://*/*"],
+     "js": ["contentscript.js"],
+     "css": ["doomscroll.css"]
+   }
+ ],
+  "background": {
+    "service_worker": "backgroundscript.js",
+    "scripts": ["backgroundscript.js"]
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_title": "Doomscroll Prevention",
+    "default_popup": "popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "beastify@example.com",
+      "update_url": "https://example.com/updates.json"
+    }
+  }
+
+}
