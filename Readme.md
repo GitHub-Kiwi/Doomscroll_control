@@ -17,7 +17,6 @@ If you would like to learn more about how websites get you to mindlessly scroll,
 # ToDo
 
 - support other languages
-- release in Chrome
 
 
 # KnowHow:

@@ -85,25 +85,13 @@ function onStart() {
             storageData.installed = true;
             env.storage.sync.set({
                 installed: true,
-                sites: objStorageSites
+                sites: storageData.sites
             })
-                .then(addContentScriptToOpenTabs); // add contentscript to open tabs, to add extension to open tabs when extension is installed
+            .then(()=>{
+                // firefox seems to add contentscripts to existing tabs, chrome does not 
+                updateContentscripts();
+            });
         }
-    });
-}
-
-// add contentscripts to already opened tabs
-function addContentScriptToOpenTabs() {
-    env.tabs.query({}).then((tabs) => {
-        tabs.forEach(tab => {
-            env.scripting.executeScript(
-                {
-                    target: { tabId: tab.id },
-                    files: ["contentscript.js"],
-                })
-                .then(() => console.log("script executed in open tab: " + tab.url))
-                .catch((err) => console.warn("unexpected error while registering Script", err));
-        });
     });
 }
 

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Doomscroll Control",
   "version": "1.0",
-  "description": "On Doomscroll websites you will be asked to specify the amount of time you want to spend on that site. After that time is up, you will be asked again. Click the toolbar-icon to it to add/remove Doomscroll websites.",
+  "description": "A solution to the trap of mindlessly scrolling on doomscroll websites like reddit, tiktok, twitter, bluesky etc.",
   "homepage_url": "https://github.com/GitHub-Kiwi/Doomscroll_control",
   "icons": {
     "128": "icon.png"
@@ -10,9 +10,8 @@
 
   "permissions": [
     "alarms",
-    "scripting",
     "storage",
-    "tabs"],
+    "activeTab"],
   "web_accessible_resources": [
     {
       "resources": ["contentscript.html"],
