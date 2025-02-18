@@ -45,6 +45,9 @@ function makeNumberInputScrollable(input, scrollIncrement, scrollRegion) {
 }
 
 function disableButtonForDuration(btn, nmrSeconds) {
+  if(nmrSeconds <= 0) {
+    return;
+  }
   btn.style.animationDuration = nmrSeconds.toString() + "s";
   btn.disabled = true;
   setTimeout(()=>{
@@ -82,7 +85,7 @@ function onClickBtnDoomMinutes(e) {
 }
 
 var firstShowWarning = true;
-function showDoomWarning(nmrIncrement, nmrEnterPageButtonDelay) {
+function showDoomWarning(nmrIncrement, nmrEnterPageButtonDelay, nmrEnterPageButtonDelayFirst, bolShowFirstPageWarning) {
   if (firstShowWarning) {
     firstShowWarning = false;
     fetch(env.runtime.getURL('/contentscript.html'))
@@ -97,7 +100,13 @@ function showDoomWarning(nmrIncrement, nmrEnterPageButtonDelay) {
         btnDoomMinutes.addEventListener("click", onClickBtnDoomMinutes);
         txtDoomMinutes.value = nmrIncrement;
         divWarning["showingDisplayValue"] = window.getComputedStyle(divWarning).getPropertyValue("display");
-        disableButtonForDuration(btnDoomMinutes, nmrEnterPageButtonDelay);
+
+        if(bolShowFirstPageWarning) {
+          disableButtonForDuration(btnDoomMinutes, nmrEnterPageButtonDelayFirst);
+        }
+        else {
+          onClickBtnDoomMinutes();
+        }
       });
   }
   else {
@@ -129,7 +138,7 @@ function updateWarningDisplay() {
   env.runtime.sendMessage({ action: "updateWarningDisplay", urlString: storageSiteString(objURL) })
     .then((response) => {
       if (response.showWarning) {
-        showDoomWarning(response.increment, response.enterPageButtonDelay);
+        showDoomWarning(response.increment, response.enterPageButtonDelay, response.enterPageButtonDelayFirst, response.showFirstPageWarning);
       }
       else {
         hideDoomWarning();

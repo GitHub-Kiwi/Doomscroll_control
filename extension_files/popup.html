@@ -24,24 +24,47 @@
     
     <div id="divPopupSettings" style="display: none;">
       <h1 class="doomscroll" style="white-space: nowrap;">Other Settings</h1>
+      
       <hr>
+      
       <p class="doomscroll">
         The delay, before the button, which confirms the amount of minutes you want to spend on the doomscroll-Website, can be pressed.
       </p>
       <div style="display:flex; width: 100%;">
         <div style="position:relative; display: inline-flex;">
             <input type="number" placeholder="5" value="5" min="0" id="txtEnterPageButtonDelay"
-                class="doomscroll doomscroll-boxes" style="width:100px;" />
+                class="doomscroll doomscroll-boxes" style="width:100%;" />
             <div style="display: inline-block; position: absolute; right: 40px; align-self: center;" class="doomscroll">
                 sec
             </div>
         </div>
-        <button id="btnEnterPageButtonDelay" class="doomscroll doomscroll-boxes" 
-        style="display:inline-block; margin-left: 10px; width: 100%;">
-            Confirm
-        </button>
-    </div>
+      </div>
+      
       <hr>
+      
+      <p class="doomscroll">
+        The delay when the site is visited first, before the button, which confirms the amount of minutes you want to spend on the doomscroll-Website, can be pressed.
+      </p>
+      <div style="display:flex; width: 100%;">
+        <div style="position:relative; display: inline-flex;">
+            <input type="number" placeholder="5" value="0" min="0" id="txtEnterPageButtonDelayFirst"
+                class="doomscroll doomscroll-boxes" style="width:100%;" />
+            <div style="display: inline-block; position: absolute; right: 40px; align-self: center;" class="doomscroll">
+                sec
+            </div>
+        </div>
+      </div>
+
+      <hr>
+      
+      <p class="doomscroll">
+        Show the first doomscroll-reminder when a doomscroll website that was visited before is opened.
+      </p>
+      <div style="display:flex; width: 100%; align-items: center;">
+          <input type="checkbox" value="0" min="0" id="chkShowFirstPageWarning"
+              class="doomscroll"/>
+          <label class="doomscroll" for="chkShowFirstPageWarning"> show</label>
+      </div>
     </div>
   </body>
 </html>

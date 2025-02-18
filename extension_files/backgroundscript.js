@@ -1,9 +1,13 @@
 /// sync storage:
 ///sync:{
-///  installed:bool,
+///  installed: bool,
+///  enterPageButtonDelay: number in sec, 
+///  enterPageButtonDelayFirst: number in sec,
+///  showFirstPageWarning: bool,
 ///  sites: {
 ///      <url.hostname>: {
-///          <pathname>: {
+///          firstVisit: bool if this url-host was visited before
+///          <url.pathname>: {
 ///              increment: number,
 ///              nextWarning: number in ms (Date.getTime())
 ///          }
@@ -43,7 +47,7 @@ function addSiteToObjStorageSites(objStorageSites, urlString, increment, nextWar
     var objURL = parseUrlStringToURL(urlString);
 
     if (!objStorageSites.hasOwnProperty(objURL.hostname)) {
-        objStorageSites[objURL.hostname] = {};
+        objStorageSites[objURL.hostname] = {firstVisit: true};
     }
     if (!objStorageSites[objURL.hostname].hasOwnProperty(objURL.pathname)) {
         objStorageSites[objURL.hostname][objURL.pathname] =
@@ -67,6 +71,8 @@ function onStart() {
     env.storage.sync.get({ 
         installed: false,
         enterPageButtonDelay: 5,
+        enterPageButtonDelayFirst: 0,
+        showFirstPageWarning: true,
         sites: {}
     })
     .then((storageData) => {
@@ -113,34 +119,47 @@ function onUpdateWarningDisplay(urlString, sendResponse) {
     var objResponse = {
         increment: 5,
         enterPageButtonDelay: 5,
+        enterPageButtonDelayFirst: 0,
+        showFirstPageWarning: false,
         showWarning: false
     };
 
-    env.storage.sync.get({ sites: {}, enterPageButtonDelay: 5 })
-        .then((storageSync) => {
-            objResponse.enterPageButtonDelay = storageSync.enterPageButtonDelay;
-            if (storageSync.sites[objURL.hostname] === undefined) {
-                sendResponse(objResponse);
-                return;
-            }
-            var strPathname = undefined;
-            Object.keys(storageSync.sites[objURL.hostname]).forEach((pathname) => {
-                if (objURL.pathname.startsWith(pathname)) {
-                    strPathname = pathname;
-                }
-            })
+    env.storage.sync.get({ sites: {}, enterPageButtonDelay: 5, enterPageButtonDelayFirst: 0, showFirstPageWarning: false })
+    .then((storageSync) => {
+        objResponse.enterPageButtonDelay = storageSync.enterPageButtonDelay;
+        objResponse.enterPageButtonDelayFirst = storageSync.enterPageButtonDelayFirst;
+        objResponse.showFirstPageWarning = storageSync.showFirstPageWarning;
 
-            if (strPathname !== undefined) {
-                //console.log("urlMatch for ", urlString);
-                objResponse.increment = storageSync.sites[objURL.hostname][strPathname].increment;
-                objResponse.showWarning = storageSync.sites[objURL.hostname][strPathname].nextWarning < Date.now();
+        if (storageSync.sites[objURL.hostname] === undefined) {
+            // host is not a doomscroll-host
+            sendResponse(objResponse);
+            return;
+        }
+        var strPathname = undefined;
+        
+        Object.keys(storageSync.sites[objURL.hostname]).forEach((pathname) => {
+            if (objURL.pathname.startsWith(pathname)) {
+                strPathname = pathname;
             }
-            sendResponse(objResponse);
         })
-        .catch(() => {
-            console.warn("storage lookup during warning display request failed!");
-            sendResponse(objResponse);
-        });
+
+        if (strPathname !== undefined) {
+            //console.log("urlMatch for ", urlString);
+            objResponse.increment = storageSync.sites[objURL.hostname][strPathname].increment;
+            objResponse.showWarning = storageSync.sites[objURL.hostname][strPathname].nextWarning < Date.now();
+            
+            if(storageSync.sites[objURL.hostname].firstVisit) {
+                objResponse.showFirstPageWarning = true;
+                objResponse.showWarning = true;
+            }
+        }
+        
+        sendResponse(objResponse);
+    })
+    .catch(() => {
+        console.warn("storage lookup during warning display request failed!");
+        sendResponse(objResponse);
+    });
 }
 
 function addTimeIncrement(strUrl, nmrIncrement) {
@@ -152,6 +171,7 @@ function addTimeIncrement(strUrl, nmrIncrement) {
                 return;
             }
             var strPathname = undefined;
+            storageSync.sites[objURL.hostname].firstVisit = false;
             Object.keys(storageSync.sites[objURL.hostname]).forEach((pathname) => {
                 if (objURL.pathname.startsWith(pathname)) {
                     strPathname = pathname;
@@ -166,6 +186,7 @@ function addTimeIncrement(strUrl, nmrIncrement) {
                 //start alarm. if alarm with strUrl already exists the previous is cleared
                 env.alarms.create(objURL.hostname + strPathname,
                     { when: (nextAlarm + 1) });
+                
                 return env.storage.sync.set(storageSync);
             }
         });
@@ -252,4 +273,4 @@ function onRuntimeMessage(request, sender, sendResponse) {
 
 onStart();
 // reset storage
-//env.storage.sync.set({ installed: false, sites: {}}}).then( () => {onStart();});
+//env.storage.sync.set({ installed: false, sites: {}}).then( () => {onStart();});

@@ -42,12 +42,15 @@ function makeNumberInputScrollable(input, scrollIncrement, scrollRegion) {
 		input.value = (Number.isNaN(Number(input.value)) ? 0 : Number(input.value)) + ((e.deltaY > 0 ? -1 : 1) * (Number.isNaN(Number(scrollIncrement)) ? 0 : Number(scrollIncrement)));
 		input.value = input.hasAttribute("min") && !Number.isNaN(Number(input.min)) ? Math.max(input.value, Number(input.min)) : input.value;
 		input.value = input.hasAttribute("max") && !Number.isNaN(Number(input.min)) ? Math.min(input.value, Number(input.max)) : input.value;
-		e.stopImmediatePropagation();
+		
+		e.stopImmediatePropagation();// stop page from scrolling
 		e.preventDefault();
+
+		input.dispatchEvent(new Event("change", { bubbles: true })); // trigger value-change event
 	  }
 	  catch { }
 	});
-  }
+}
 
 // clears siteList, and then fills it with the sites in storage.sync.sites
 function displayStorageData() {
@@ -59,28 +62,34 @@ function displayStorageData() {
 		console.error("Error creating site list", error);
 	}
 
-	env.storage.sync.get({ sites: {}, enterPageButtonDelay: 5 })
-		.then((storageSync) => {
-			txtEnterPageButtonDelay.value = storageSync.enterPageButtonDelay;
-			Object.keys(storageSync.sites).forEach((siteHostname, hostnameIndex) => {
+	env.storage.sync.get({ sites: {}, enterPageButtonDelay: 5, enterPageButtonDelayFirst: 0, showFirstPageWarning: false })
+	.then((storageSync) => {
+		txtEnterPageButtonDelay.value = storageSync.enterPageButtonDelay;
+		txtEnterPageButtonDelayFirst.value = storageSync.enterPageButtonDelayFirst;
+		chkShowFirstPageWarning.checked = storageSync.showFirstPageWarning;
 
-				Object.keys(storageSync.sites[siteHostname]).forEach((sitePathname, pathnameIndex) => {
-					let li = document.createElement("li");
-					li.textContent = siteHostname + sitePathname;
-					li.classList.add("doomscroll");
+		Object.keys(storageSync.sites).forEach((siteHostname, hostnameIndex) => {
 
-					let removeBtn = document.createElement("button");
-					removeBtn.innerHTML = "X"; // Using 'X' for delete, could use an icon here
-					removeBtn.style.marginLeft = "10px";
-					removeBtn.classList.add("doomscroll");
-					removeBtn.addEventListener("click", onclickRemoveSite.bind(null, siteHostname, sitePathname));
+			Object.keys(storageSync.sites[siteHostname]).forEach((sitePathname, pathnameIndex) => {
+				if(sitePathname === "firstVisit") {
+					return;
+				}
+				let li = document.createElement("li");
+				li.textContent = siteHostname + sitePathname;
+				li.classList.add("doomscroll");
 
-					li.appendChild(removeBtn);
-					divSiteList.appendChild(li);
-				});
+				let removeBtn = document.createElement("button");
+				removeBtn.innerHTML = "X"; // Using 'X' for delete, could use an icon here
+				removeBtn.style.marginLeft = "10px";
+				removeBtn.classList.add("doomscroll");
+				removeBtn.addEventListener("click", onclickRemoveSite.bind(null, siteHostname, sitePathname));
+
+				li.appendChild(removeBtn);
+				divSiteList.appendChild(li);
 			});
-			divSiteList.scrollTop = nmrListScrollTop;
 		});
+		divSiteList.scrollTop = nmrListScrollTop;
+	});
 }
 
 function onclickAddSite(event) {
@@ -125,11 +134,22 @@ function onclickSettings() {
 	}
 }
 
-function onclickEnterPageButtonDelay() {
+function onchangeEnterPageButtonDelay() {
 	var nmrDelay = Number(txtEnterPageButtonDelay.value);
 	if(!Number.isNaN(nmrDelay) && nmrDelay >= 0) {
 		env.storage.sync.set({ enterPageButtonDelay: nmrDelay });
 	}
+}
+
+function onchangeEnterPageButtonDelayFirst() {
+	var nmrDelay = Number(txtEnterPageButtonDelayFirst.value);
+	if(!Number.isNaN(nmrDelay) && nmrDelay >= 0) {
+		env.storage.sync.set({ enterPageButtonDelayFirst: nmrDelay });
+	}
+}
+
+function onchangeShowFirstPageWarning() {
+	env.storage.sync.set({ showFirstPageWarning: chkShowFirstPageWarning.checked });
 }
 
 
@@ -141,13 +161,17 @@ function onStart() {
 	var btnSettings = document.getElementById("btnSettings");
 	var divPopupSettings = document.getElementById("divPopupSettings");
 	var txtEnterPageButtonDelay = document.getElementById("txtEnterPageButtonDelay");
-	var btnEnterPageButtonDelay = document.getElementById("btnEnterPageButtonDelay");	
+	var txtEnterPageButtonDelayFirst = document.getElementById("txtEnterPageButtonDelayFirst");
+	var chkShowFirstPageWarning = document.getElementById("chkShowFirstPageWarning");
 
 	btnAddSite.addEventListener("click", onclickAddSite);
 	btnSettings.addEventListener("click", onclickSettings);
-	btnEnterPageButtonDelay.addEventListener("click", onclickEnterPageButtonDelay);
+	txtEnterPageButtonDelay.addEventListener("change", onchangeEnterPageButtonDelay);
+	txtEnterPageButtonDelayFirst.addEventListener("change", onchangeEnterPageButtonDelayFirst);
+	chkShowFirstPageWarning.addEventListener("change", onchangeShowFirstPageWarning);
 	
 	makeNumberInputScrollable(txtEnterPageButtonDelay, 1, txtEnterPageButtonDelay.parentElement);
+	makeNumberInputScrollable(txtEnterPageButtonDelayFirst, 1, txtEnterPageButtonDelayFirst.parentElement);
 	
 	displayStorageData();
 
@@ -163,7 +187,6 @@ function onStart() {
 }
 
 document.onreadystatechange = function () {
-	console.log(document.readyState)
 	if (document.readyState === 'interactive') {
 		onStart();
 	} 

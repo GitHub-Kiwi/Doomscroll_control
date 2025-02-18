@@ -16,4 +16,6 @@ If you would like to learn more about how websites get you to mindlessly scroll,
 
 # ToDo
 
-- support other languages
+- support other languages https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
+
+- add option to not add different delay to first warning popup

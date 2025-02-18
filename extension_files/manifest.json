@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Doomscroll Control",
-  "version": "1.0",
+  "version": "1.2",
   "description": "A solution to the trap of mindlessly scrolling on doomscroll websites like reddit, tiktok, twitter, bluesky etc.",
   "homepage_url": "https://github.com/GitHub-Kiwi/Doomscroll_control",
   "icons": {
